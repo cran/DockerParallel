@@ -15,7 +15,7 @@ library(DockerParallel)
 ## ----eval=FALSE---------------------------------------------------------------
 #  ## Getter
 #  .getJobQueueName
-#  .getWorkerNumber
+#  .getExpectedWorkerNumber
 #  .getWorkerHardware
 #  .getServerHardware
 #  .getServerWorkerSameLAN
@@ -25,7 +25,7 @@ library(DockerParallel)
 #  
 #  ## Setter
 #  .setJobQueueName
-#  .setWorkerNumber
+#  .setExpectedWorkerNumber
 #  .setWorkerHardware
 #  .setServerHardware
 #  .setServerWorkerSameLAN
@@ -35,23 +35,25 @@ library(DockerParallel)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  ## Getter
-#  .getWorkerHandles
-#  .getServerHandle
+#  .getServerFromOtherSource
 #  .getServerPrivateIp
+#  .getServerPrivatePort
 #  .getServerPublicIp
+#  .getServerPublicPort
 #  
 #  ## Setter
-#  .addWorkerHandles
-#  .removeWorkerHandles
-#  .setServerHandle
+#  .setServerFromOtherSource
 #  .setServerPrivateIp
+#  .setServerPrivatePort
 #  .setServerPublicIp
+#  .setServerPublicPort
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  setRefClass(
 #      "DockerContainer",
 #      fields = list(
-#          name = "CharOrNULL",
+#          name = "character",
+#          backend = "character",
 #          maxWorkerNum = "integer",
 #          environment = "list",
 #          image = "character"
@@ -67,40 +69,27 @@ library(DockerParallel)
 #  getExportedNames
 #  getExportedObject
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("configServerContainerEnv", function(container, cluster, verbose){
-#      standardGeneric("configServerContainerEnv")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("configServerContainerEnv")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("configWorkerContainerEnv", function(container, cluster, workerNumber, verbose){
-#      standardGeneric("configWorkerContainerEnv")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("configWorkerContainerEnv")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("registerParallelBackend", function(container, cluster, verbose, ...){
-#      standardGeneric("registerParallelBackend")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("registerParallelBackend")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("deregisterParallelBackend", function(container, cluster, verbose, ...){
-#      standardGeneric("deregisterParallelBackend")
-#  })
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("getServerContainer", function(workerContainer){
-#      standardGeneric("getServerContainer")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("deregisterParallelBackend")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("getExportedNames", function(x){
-#      standardGeneric("getExportedNames")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("getServerContainer")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("getExportedObject", function(x, name){
-#      standardGeneric("getExportedObject")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("getExportedNames")
+
+## -----------------------------------------------------------------------------
+getGeneric("getExportedObject")
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  foo <- function(){
@@ -108,55 +97,44 @@ library(DockerParallel)
 #  }
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  initializeProvider
+#  initializeCloudProvider
 #  runDockerServer
-#  runDockerWorkers
-#  getDockerInstanceIps
-#  getDockerInstanceStatus
-#  IsDockerInstanceInitializing
-#  IsDockerInstanceRunning
-#  IsDockerInstanceStopped
-#  killDockerInstances
+#  stopDockerServer
+#  getServerStatus
+#  getDockerServerIp
+#  setDockerWorkerNumber
+#  getDockerWorkerNumbers
 #  dockerClusterExists
 #  reconnectDockerCluster
+#  cleanupDockerCluster
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("initializeProvider", function(provider, cluster, verbose){
-#      standardGeneric("initializeProvider")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("initializeCloudProvider")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("runDockerServer", function(provider, cluster, container, hardware, verbose){
-#      standardGeneric("runDockerServer")
-#  })
-#  
-#  setGeneric("runDockerWorkers",
-#             function(provider, cluster, container, hardware, workerNumber, verbose){
-#      standardGeneric("runDockerWorkers")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("runDockerServer")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("getDockerInstanceIps", function(provider, instanceHandles, verbose){
-#      standardGeneric("getDockerInstanceIps")
-#  })
+getGeneric("setDockerWorkerNumber")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("getDockerInstanceStatus", function(provider, instanceHandles, verbose){
-#      standardGeneric("getDockerInstanceStatus")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("getDockerServerIp")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("killDockerInstances", function(provider, instanceHandles, verbose){
-#      standardGeneric("killDockerInstances")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("getDockerWorkerNumbers")
 
-## ----eval=FALSE---------------------------------------------------------------
-#  setGeneric("dockerClusterExists", function(provider, cluster, verbose){
-#      standardGeneric("dockerClusterExists")
-#  })
-#  setGeneric("reconnectDockerCluster", function(provider, cluster, verbose){
-#      standardGeneric("reconnectDockerCluster")
-#  })
+## -----------------------------------------------------------------------------
+getGeneric("dockerClusterExists")
+
+getGeneric("reconnectDockerCluster")
+
+## -----------------------------------------------------------------------------
+getGeneric("getDockerStaticData")
+
+## -----------------------------------------------------------------------------
+getGeneric("setDockerStaticData")
+
+## -----------------------------------------------------------------------------
+getGeneric("cleanupDockerCluster")
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  provider <- ECSFargateProvider::ECSFargateProvider()
