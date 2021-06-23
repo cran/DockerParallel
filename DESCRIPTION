@@ -1,7 +1,7 @@
 Package: DockerParallel
 Title: Using the Docker Container to Create R Workers on Local or Cloud
         Platform
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: 
     person(given = "Jiefei",
            family = "Wang",
@@ -21,8 +21,8 @@ VignetteBuilder: knitr
 URL: https://github.com/Jiefei-Wang/DockerParallel
 BugReports: https://github.com/Jiefei-Wang/DockerParallel/issues
 NeedsCompilation: no
-Packaged: 2021-06-07 08:00:30 UTC; lenovo
+Packaged: 2021-06-23 12:38:40 UTC; lenovo
 Author: Jiefei Wang [aut, cre]
 Maintainer: Jiefei Wang <szwjf08@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-06-07 10:20:05 UTC
+Date/Publication: 2021-06-23 13:00:02 UTC

@@ -1,3 +1,20 @@
+---
+title: "vignette"
+author: 
+- name: Jiefei Wang
+  affiliation: Roswell Park Comprehensive Cancer Center, Buffalo, NY
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+package: DockerParallel
+---
+
+
+
+
+
 # Note
 The package `DockerParallel` is still under development, if you find any package which is not available on CRAN or not behaves as this vignette described, please consider to reinstall it from my GitHub repository.
 
@@ -15,7 +32,7 @@ For understanding the structure of `DockerParallel`, imagine that if someone tel
 
 `DockerParallel` answers these questions via three components:  `DockerContainer`, `CloudProvider` and `CloudConfig`. These components can be summarized in the following figure
 
-![](vignettes/components.jpg)
+![](components.jpg)
 `DockerContainer` determines the base environment and the parallel framework the worker uses. `CloudProvider` provides the functions to deploy a container on the cloud. `CloudConfig` stores the cluster information. We would not discuss the technical details of these components as they should be only interesting for the developer. Users only need to have a basic impression on what these components for. The workflow of the `DockerParallel` package is as follow
 
 1. Select a cloud provider(Available: ECSFargateProvider, AKSProvider)
@@ -29,7 +46,7 @@ Amazon provides Elastic Compute Service(ECS) to take over the management of the 
 
 In this vignette, We use the foreach parallel framework and doRedis backend. We deploy the container using the ECS fargate launch type. Below is the diagram of how `DockerParallel` works with ECS and foreach doRedis container
 
-![](vignettes/fargate.jpg)
+![](fargate.jpg)
 
 The cluster object is created in your local R session, but the workers and redis server are from Amazon ECS. Each docker container contains one or more R workers, they will receive jobs sent by your local R session and do the parallel computing. 
 

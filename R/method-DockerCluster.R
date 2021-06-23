@@ -119,18 +119,36 @@ setMethod(f = "show",signature = "DockerCluster",
               }
               isServerRunning <- object$isServerRunning()
 
-              cat("Server status:     ", ifelse(isServerRunning ,"Running", "Stopped"), "\n")
-              if(isServerRunning){
-                  cat("Server public IP:  ", .getServerPublicIp(object), "\n")
-                  cat("Server private IP: ", .getServerPrivateIp(object), "\n")
-              }
-              workerNumbers <- object$getWorkerNumbers()
 
-              cat("Worker Number:     ",
-                  workerNumbers$expected, "/",
-                  workerNumbers$running,"/",
-                  workerNumbers$initializing,
-                  " (expected/running/initializing)\n")
+              serverStatus <- paste0("Server status:     ",
+                                     ifelse(isServerRunning ,
+                                            "Connected", "Not connected"), "\n")
+
+              if(isServerRunning){
+                  serverIps <- paste0("Server public IP:  ",
+                                      .getServerPublicIp(object), "\n",
+                                      "Server private IP: ",
+                                      .getServerPrivateIp(object), "\n")
+                  workerNumbers <- object$getWorkerNumbers()
+                  workerMsg <- paste0("Worker Number:     ",
+                                      workerNumbers$expected, "/",
+                                      workerNumbers$running,"/",
+                                      workerNumbers$initializing,
+                                      " (expected/running/initializing)\n")
+              }else{
+                  serverIps <- NULL
+                  workerMsg <- paste0("Worker Number:     ",
+                                      .getExpectedWorkerNumber(object), "/",
+                                      0,"/",
+                                      0,
+                                      " (expected/running/initializing)\n")
+              }
+
+              cat(serverStatus)
+              cat(serverIps)
+              cat(workerMsg)
+
+
               invisible(NULL)
           })
 
@@ -309,23 +327,27 @@ getWorkerNumbers <- function(cluster){
          expected = expected)
 }
 
-stopCluster <- function(cluster, ignoreError = FALSE){
+stopCluster <- function(cluster, ignoreError = FALSE, cleanup = FALSE){
     verbose <- cluster$verbose
     verbosePrint(verbose, "Stopping cluster")
     provider <- .getCloudProvider(cluster)
     settings <- .getClusterSettings(cluster)
     handleError(deregisterBackend(cluster), errorToWarning = ignoreError)
-    ## We use this trick to preserve the expected worker number
-    expectedWorkerNumber <- .getExpectedWorkerNumber(cluster)
-    handleError(setWorkerNumber(cluster, 0), errorToWarning = ignoreError)
-    .setExpectedWorkerNumber(cluster, expectedWorkerNumber)
-
-    handleError(stopServer(cluster), errorToWarning = ignoreError)
+    ## The workers and server are only adjustable when the cloud has been initialized
     if(settings$cloudProviderInitialized){
+        ## We use this trick to preserve the expected worker number
+        expectedWorkerNumber <- .getExpectedWorkerNumber(cluster)
+        handleError(setWorkerNumber(cluster, 0), errorToWarning = ignoreError)
+        .setExpectedWorkerNumber(cluster, expectedWorkerNumber)
+
+        handleError(stopServer(cluster), errorToWarning = ignoreError)
+
         handleError(
-            cleanupDockerCluster(provider = provider,
-                                 cluster = cluster,
-                                 verbose = verbose),
+            if(cleanup){
+                cleanupDockerCluster(provider = provider,
+                                     cluster = cluster,
+                                     verbose = verbose)
+            },
             errorToWarning = ignoreError)
     }
     invisible(NULL)
@@ -432,12 +454,15 @@ update <- function(cluster){
 cleanup <- function(cluster, deep = FALSE){
     provider <- .getCloudProvider(cluster)
     verbose <- .getVerbose(cluster)
-    if(cluster$isServerRunning()){
-        stop("The server is still running")
-    }
-    workerNumbers <- cluster$getWorkerNumbers()
-    if(workerNumbers$initializing + workerNumbers$running != 0){
-        stop("The workers are still running")
+    settings <- .getClusterSettings(cluster)
+    if(settings$cloudProviderInitialized){
+        if(cluster$isServerRunning()){
+            stop("The server is still running")
+        }
+        workerNumbers <- cluster$getWorkerNumbers()
+        if(workerNumbers$initializing + workerNumbers$running != 0){
+            stop("The workers are still running")
+        }
     }
     cleanupDockerCluster(provider = provider,
                          cluster = cluster,
